@@ -83,9 +83,7 @@ def overlay_figures(base_image, start_year, end_year, figures)
     background = CATEGORY_BG_COLORS[figure[:category]]
     foreground = CATEGORY_FG_COLORS[figure[:category]]
 
-    # TODO: Change foreground color
-    
-    "\\( -bordercolor black -border #{BORDER_WIDTH}x#{BORDER_WIDTH} -background #{background} -size #{(death_year - birth_year)*YEAR_HEIGHT - BORDER_WIDTH}x#{COL_WIDTH} -gravity center label:'#{name}' -rotate 90 \\) -gravity NorthWest -geometry +#{DECADE_WIDTH + 3*BORDER_WIDTH + figure_idx * (COL_WIDTH + BORDER_WIDTH)}+#{YEAR_HEIGHT*(effective_end_year - death_year) + BORDER_WIDTH} -composite"
+    "\\( -bordercolor black -border #{BORDER_WIDTH}x#{BORDER_WIDTH} -background #{background} -size #{(death_year - birth_year)*YEAR_HEIGHT - BORDER_WIDTH}x#{COL_WIDTH} -gravity center -fill #{foreground} label:'#{name}' -rotate 90 \\) -gravity NorthWest -geometry +#{DECADE_WIDTH + 3*BORDER_WIDTH + figure_idx * (COL_WIDTH + BORDER_WIDTH)}+#{YEAR_HEIGHT*(effective_end_year - death_year) + BORDER_WIDTH} -composite"
   end
 
   term_command = "-"
