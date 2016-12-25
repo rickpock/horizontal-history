@@ -5,8 +5,8 @@ Data for historical figures will be stored in yaml format in the `data` director
 
 Each figure must have the following fields:
 * name
-* birth-year
-* death-year
+* birth_year
+* death_year
  * Set to `nil` for someone still living
 * category
  * One of `:political`, `:cultural`, `:religious`, `:explorer`, `:science`, `:invention`, `:business`, `:economics`, `:philosophy`, `:art`, `:writing`, `:music`, `:entertainment`, `:sports`, and `:other`.
@@ -15,12 +15,12 @@ Example Data Format:
 ```yml
 :figures:
  - :name: "George Washington"
-   :birth-year: 1732
-   :death-year: 1799
+   :birth_year: 1732
+   :death_year: 1799
    :category: :political
  - :name: "Elon Musk"
-   :birth-year: 1971
-   :death-year: nil
+   :birth_year: 1971
+   :death_year: nil
    :category: :business
    ```
 Historical figures will be matched by name. If there are multiple entries with the same name, all of them will be charted if that name is specified.
