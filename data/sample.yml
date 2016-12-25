@@ -1,0 +1,10 @@
+---
+:figures:
+ - :name: "George Washington"
+   :birth_year: 1732
+   :death_year: 1799
+   :category: :political
+ - :name: "Elon Musk"
+   :birth_year: 1971
+   :death_year: 
+   :category: :business
