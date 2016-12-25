@@ -44,7 +44,7 @@ The historical figure rectangles will be colored based on their category.
 The output image will be in png format and piped to `stdout`.
 
 # Usage
-The program will be run by specifying each historical figure's name as an argument.
+Historical figures are specified as arguments on the command line. Arguments beginning with a colon are interpreted as a category. All historical figures in the data files matching that category will be included. Argument not beginning with a colon are interpreted as a name.
 
 Example:
-```horizhist "George Washington" "Elon Musk" > out.png```
+```ruby src/horizhist.rb "George Washington" :political > out.png```
