@@ -2,7 +2,7 @@
 A history visualization tool charting the lifetimes of historical figures.
 
 # What is it?
-This project is inspired by Tim Urban's ["Horizontal History" article](http://waitbutwhy.com/2016/01/horizontal-history.html)
+This project is inspired by Tim Urban's ["Horizontal History" article](http://waitbutwhy.com/2016/01/horizontal-history.html).
 
 The project generates images charting the lifetimes of historical figures.
 
