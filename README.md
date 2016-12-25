@@ -10,10 +10,17 @@ The project generates images charting the lifetimes of historical figures.
 Only OS X.
 
 # Prerequisities
-TODO!
+* Ruby runtime
+* Open3 gem
+* ImageMagick
+
+TODO: Provide installation instructions for these prerequisites.
 
 # Usage
-TODO!
+`ruby src/horizhist [args] >[image_file]`
+`args` can be a list of names of historical figures or categories of historical figures or both. See the [spec](https://github.com/rickpock/horizontal-history/blob/master/spec.md) for details.
+
+The program outputs the png image data to stdout. Redirect the stream to the filename of your choice.
 
 # Version 1.0 Spec
 [Spec](https://github.com/rickpock/horizontal-history/blob/master/spec.md)
