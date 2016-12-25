@@ -8,3 +8,19 @@
    :birth_year: 1971
    :death_year: 
    :category: :business
+ - :name: "Robert Mugabe"
+   :birth_year: 1924
+   :death_year:
+   :category: :political
+ - :name: "Nelson Mandela"
+   :birth_year: 1918
+   :death_year: 2013
+   :category: :political
+ - :name: "Pol Pot"
+   :birth_year: 1925
+   :death_year: 1998
+   :category: :political
+ - :name: "Queen Victoria"
+   :birth_year: 1819
+   :death_year: 1901
+   :category: :political
