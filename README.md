@@ -23,6 +23,11 @@ It may work on additional platforms, but I've only developed and tested it on OS
 
 The program outputs the png image data to stdout. Redirect the stream to the filename of your choice.
 
+## Example
+`ruby src/horizhist.rb "Nelson Mandela" :business > doc/example-output.png`
+
+![](https://raw.githubusercontent.com/rickpock/horizontal-history/master/doc/example-output.png)
+
 # Version 1.0 Spec
 [Spec](https://github.com/rickpock/horizontal-history/blob/master/spec.md)
 
