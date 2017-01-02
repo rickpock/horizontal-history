@@ -24,3 +24,7 @@
    :birth_year: 1819
    :death_year: 1901
    :category: :political
+ - :name: "Chinua Achebe"
+   :birth_year: 1930
+   :death_year: 2013
+   :category: :writing
