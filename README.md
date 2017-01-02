@@ -30,3 +30,8 @@ The program outputs the png image data to stdout. Redirect the stream to the fil
 This project is licensed under the MIT License. Check the LICENSE file for details.
 
 All code is copyrighted by Rick Pocklington.
+
+# Contributing
+Additional contributors to the project are welcome!
+
+But I don't understand how github project user management works, so if you're interested in contributing, email me at rickpock at gmail.com.
