@@ -13,6 +13,8 @@ end
 
 FIGURES = load_data("data")
 
-def find_figures(figure_names)
-  FIGURES.select {|figure| figure_names.include? figure[:name]}
+def find_figures(figure_names, figure_categories)
+  FIGURES.select do |figure|
+    figure_names.include?(figure[:name]) || figure_categories.include?(figure[:category])
+  end
 end
