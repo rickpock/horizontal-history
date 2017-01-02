@@ -32,7 +32,7 @@ The program outputs the png image data to stdout. Redirect the stream to the fil
 [Spec](https://github.com/rickpock/horizontal-history/blob/master/spec.md)
 
 # Legal Stuff
-This project is licensed under the MIT License. Check the LICENSE file for details.
+This project is licensed under the MIT License. Check the [LICENSE file](https://raw.githubusercontent.com/rickpock/horizontal-history/master/LICENSE) for details.
 
 All code is copyrighted by Rick Pocklington.
 
