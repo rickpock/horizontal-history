@@ -9,12 +9,13 @@ The project generates images charting the lifetimes of historical figures.
 # Supported Platforms
 Only OS X.
 
-# Prerequisities
-* Ruby runtime
-* Open3 gem
-* ImageMagick
+It may work on additional platforms, but I've only developed and tested it on OS X so far.
 
-TODO: Provide installation instructions for these prerequisites.
+# Prerequisities
+* [Ruby](https://www.ruby-lang.org/en/documentation/installation/) runtime 2.3.0+
+* Open3 Ruby gem
+* [ImageMagick](https://www.imagemagick.org/script/binary-releases.php)
+ - For OS X, installed via [homebrew](http://brew.sh/) using `brew install imagemagick`.
 
 # Usage
 `ruby src/horizhist [args] >[image_file]`
