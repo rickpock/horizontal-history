@@ -64,18 +64,13 @@ CATEGORY_FG_COLORS = {
   :sports => "white"}
 CATEGORY_FG_COLORS.default = "black"
 
-def overlay_figures(base_image, start_year, end_year, figures)
+def overlay_figures(base_image, start_year, end_year, figure_columns)
   end_decade = ((end_year.to_f / 10).ceil - 1)
   effective_end_year = (end_decade + 1) * 10
 
-  #ordered_figures = figures.sort_by {|figure| -(figure[:death_year].nil? ? Date.new.year : figure[:death_year])}
-  ordered_figures = figures.sort_by {|figure| -figure[:death_year]}
-
   base_command = "convert -"
 
-  # TODO: Reuse columns if the bars won't overlap
-  figure_commands = (0...ordered_figures.length).map do |figure_idx|
-    figure = ordered_figures[figure_idx]
+  figure_commands = figure_columns.map do |figure, column_idx|
 
     name = figure[:name]
     birth_year = figure[:birth_year]
@@ -83,7 +78,7 @@ def overlay_figures(base_image, start_year, end_year, figures)
     background = CATEGORY_BG_COLORS[figure[:category]]
     foreground = CATEGORY_FG_COLORS[figure[:category]]
 
-    "\\( -bordercolor black -border #{BORDER_WIDTH}x#{BORDER_WIDTH} -background #{background} -size #{(death_year - birth_year)*YEAR_HEIGHT - BORDER_WIDTH}x#{COL_WIDTH} -gravity center -fill #{foreground} label:'#{name}' -rotate 90 \\) -gravity NorthWest -geometry +#{DECADE_WIDTH + 3*BORDER_WIDTH + figure_idx * (COL_WIDTH + BORDER_WIDTH)}+#{YEAR_HEIGHT*(effective_end_year - death_year) + BORDER_WIDTH} -composite"
+    "\\( -bordercolor black -border #{BORDER_WIDTH}x#{BORDER_WIDTH} -background #{background} -size #{(death_year - birth_year)*YEAR_HEIGHT - BORDER_WIDTH}x#{COL_WIDTH} -gravity center -fill #{foreground} label:'#{name}' -rotate 90 \\) -gravity NorthWest -geometry +#{DECADE_WIDTH + 3*BORDER_WIDTH + column_idx * (COL_WIDTH + BORDER_WIDTH)}+#{YEAR_HEIGHT*(effective_end_year - death_year) + BORDER_WIDTH} -composite"
   end
 
   term_command = "-"
@@ -95,12 +90,37 @@ def overlay_figures(base_image, start_year, end_year, figures)
   image
 end
 
+# Outputs a map of figure -> column_idx
+def assign_columns(figures)
+  columns_last_year = []
+  figure_columns = {}
+
+  ordered_figures = figures.sort_by {|figure| -figure[:death_year]}
+  ordered_figures.each do |figure|
+    # Find the first column available through the figures death year
+    first_available_column = columns_last_year.find_index {|last_year| last_year >= figure[:death_year]}
+
+    if first_available_column.nil?
+      # No column available, add a new one
+      figure_columns[figure] = columns_last_year.length
+      columns_last_year << figure[:birth_year]
+    else
+      figure_columns[figure] = first_available_column
+      columns_last_year[first_available_column] = figure[:birth_year]
+    end
+  end
+
+  figure_columns
+end
+
 def draw(figures)
   earliest_year = figures.map {|figure| figure[:birth_year]}.min
   latest_year = figures.map {|figure| figure[:death_year]}.max
 
-  bg = draw_background(earliest_year, latest_year, figures.length)
-  overlay_figures(bg, earliest_year, latest_year, figures)
+  figure_columns = assign_columns(figures)
+  max_column_idx = figure_columns.values.max
+  bg = draw_background(earliest_year, latest_year, max_column_idx + 1)
+  overlay_figures(bg, earliest_year, latest_year, figure_columns)
 end
 
 #test = [{:name => "Frank", :birth_year => 1920, :death_year => 1935, :category => :philosophy},
