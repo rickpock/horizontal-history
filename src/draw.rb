@@ -12,7 +12,8 @@ def draw_background(start_year, end_year, num_cols)
   num_decades = end_decade - start_decade + 1
 
   border = "#{BORDER_WIDTH}x#{BORDER_WIDTH}"
-  size = "#{DECADE_WIDTH + 2 * BORDER_WIDTH + num_cols * (COL_WIDTH + BORDER_WIDTH)}x#{BORDER_WIDTH + (YEAR_HEIGHT * 10) * num_decades}"
+  width = DECADE_WIDTH + 2 * BORDER_WIDTH + num_cols * (COL_WIDTH + BORDER_WIDTH)
+  size = "#{width}x#{BORDER_WIDTH + (YEAR_HEIGHT * 10) * num_decades}"
   base_command = "convert -size #{size} canvas:white"
   term_command = "-bordercolor black -border #{border} png:-"
 
@@ -22,9 +23,18 @@ def draw_background(start_year, end_year, num_cols)
     "\\( -bordercolor lightgray -border #{border} -size #{DECADE_WIDTH}x#{YEAR_HEIGHT*10 - BORDER_WIDTH} -gravity center label:'#{decade * 10}' \\) -gravity SouthWest -geometry +0+#{decade_idx * (YEAR_HEIGHT * 10)} -composite"
   end
 
+  century_commands = []
+  (0...num_decades).each do |decade_idx|
+    decade = decades[decade_idx]
+    if decade % 10 == 0
+      century_commands << %|-fill none -stroke black -draw "stroke-dasharray 5 5 path 'M 0,#{(num_decades - decade_idx) * (YEAR_HEIGHT * 10)} L #{width},#{(num_decades - decade_idx) * (YEAR_HEIGHT * 10)}'"|
+    end
+  end
+
+
   # TODO: Add dashed lines at century boundaries
 
-  full_command = base_command + " " + decade_commands.join(" ") + " " + term_command
+  full_command = base_command + " " + decade_commands.join(" ") + " " + century_commands.join(" ") + " " + term_command
 
   image, status = Open3.capture2(full_command)
   image
