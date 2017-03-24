@@ -41,8 +41,26 @@ def draw_background(start_year, end_year, num_cols)
   
   width = DECADE_WIDTH + 2 * BORDER_WIDTH + num_cols * (COL_WIDTH + BORDER_WIDTH)
   height = BORDER_WIDTH + (YEAR_HEIGHT * 10) * num_decades
+
   dp = ImagemagickDP.new(width, height, 'white')
   dp.set_border(BORDER_WIDTH, 'black')
+
+  decades = (start_decade..end_decade).to_a
+  (0...num_decades).each do |decade_idx|
+    decade = decades[decade_idx]
+
+    text_position = {
+      :x => 0, :y => decade_idx * (YEAR_HEIGHT * 10),
+      :x_align => :left, :y_align => :bottom,
+      :width => DECADE_WIDTH, :height => (YEAR_HEIGHT * 10) - BORDER_WIDTH,
+    }
+    text_settings = {
+      :text_x_align => :middle, :text_y_align => :center,
+      :border_thickness => 1, :border_color => 'lightgray',
+    }
+    dp.draw_text(text_position, "#{decade * 10}", text_settings)
+  end
+
   dp.build
 end
 

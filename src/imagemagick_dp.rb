@@ -3,28 +3,130 @@ require 'Open3'
 # ImageMagick Drawing Provider
 class ImagemagickDP
 private
+  # Parameters specifying all of the drawing primitives
   @drawing_command = ""
+
+  # Properties of the canvas
   @size = ""
   @bg_color = ""
   @border_color = ""
   @border_size = ""
 
+  DEFAULT_BG_COLOR = 'white'
+  DEFAULT_BORDER_COLOR = 'black'
+
+  # Valid x_align values are {"left", "middle", "right"}
+  # Valid y_align values are {"top", "center", "bottom"}
+  #
+  # Possible gravity values are "center" + each of the eight cardinal directions
+  def determine_gravity(x_align, y_align)
+    case x_align
+    when :left
+      case y_align
+      when :top
+        "NorthWest"
+      when :center
+        "West"
+      when :bottom
+        "SouthWest"
+      else
+        "West"  # If they've specified left or right, but not y-alignment, default to centered vertically
+      end
+    
+    when :middle
+      case y_align
+      when :top
+        "North"
+      when :center
+        "center"
+      when :bottom
+        "South"
+      else
+        "North" # If they've specified middle x-alignment, but no y-alignment, default to the top
+      end
+
+    when :right
+      case y_align
+      when :top
+        "NorthEast"
+      when :center
+        "East"
+      when :bottom
+        "SouthEast"
+      else
+        "East"  # If they've specified left or right, but not y-alignment, default to centered vertically
+      end
+
+    else
+      case y_align
+      when :top
+        "North"  # If they've specified top or bottom, but not x-alignment, default to centered horizontally
+      when :center
+        "West"  # If they've specified center y-alignment, but no x-alignment, default to the left
+      when :bottom
+        "South"  # If they've specified top or bottom, but not x-alignment, default to centered horizontally
+      else
+        "NorthWest" # If no alignment is specified, default to top-left
+      end
+    end
+  end
+
 public
-  def initialize(width, height, bg_color)
+  def initialize(width, height, bg_color = DEFAULT_BG_COLOR)
     @size = "#{width}x#{height}"
     @bg_color = bg_color
     @border_color = "black"
     @border_size = "0x0"
   end
 
-  def set_border(thickness, color)
+  def set_border(thickness, color = DEFAULT_BORDER_COLOR)
     @border_color = color
     @border_size = "#{thickness}x#{thickness}"
     self
   end
 
-  def draw_text(x, y, text, settings, transform)
-    # TODO
+  # position:
+  # * x
+  # * y
+  # * x_align
+  # * y_align
+  # * width
+  # * height
+  #
+  # settings:
+  # * border_thickness
+  # * border_color
+  # * bg_color
+  # * text_x_align
+  # * text_y_align
+  def draw_text(position, text, settings = {}, transform = {})
+    # TODO: Support transforms
+
+    # Extract parameters from `position`
+    pos_gravity = determine_gravity(position[:x_align], position[:y_align])
+
+    x = position[:x] || 0
+    y = position[:y] || 0
+
+    width = position[:width]
+    height = position[:height]
+    size_expr = width.nil? || height.nil? ? "" : "-size #{width}x#{height} "
+
+    # Extract parameters from `settings`
+    text_gravity = determine_gravity(settings[:text_x_align], settings[:text_y_align])
+
+    border_color = settings[:border_color]
+    border_thickness = settings[:border_thickness] || 0
+    border_expr = border_color.nil? ? "" : "-bordercolor #{border_color} -border #{border_thickness}x#{border_thickness} "
+
+    bg_color = settings[:bg_color]
+    bg_expr = bg_color.nil? ? "" : "-background #{bg_color} "
+
+    # Build command for drawing
+    text_command = "\\( #{border_expr}#{bg_expr}#{size_expr}-gravity #{text_gravity} label:'#{text}' \\) -gravity #{pos_gravity} -geometry +#{x}+#{y} -composite"
+    @drawing_command = "#{@drawing_command}#{text_command} "
+
+    # Return self to support the builder pattern
     self
   end
 
