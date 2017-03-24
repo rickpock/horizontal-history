@@ -18,26 +18,32 @@ def draw_background(start_year, end_year, num_cols)
   term_command = "-bordercolor black -border #{border} png:-"
 
   decades = (start_decade..end_decade).to_a
-  decade_commands = (0...num_decades).map do |decade_idx|
-    decade = decades[decade_idx]
-    "\\( -bordercolor lightgray -border #{border} -size #{DECADE_WIDTH}x#{YEAR_HEIGHT*10 - BORDER_WIDTH} -gravity center label:'#{decade * 10}' \\) -gravity SouthWest -geometry +0+#{decade_idx * (YEAR_HEIGHT * 10)} -composite"
-  end
+  decade_commands = [] #(0...num_decades).map do |decade_idx|
+#    decade = decades[decade_idx]
+#    "\\( -bordercolor lightgray -border #{border} -size #{DECADE_WIDTH}x#{YEAR_HEIGHT*10 - BORDER_WIDTH} -gravity center label:'#{decade * 10}' \\) -gravity SouthWest -geometry +0+#{decade_idx * (YEAR_HEIGHT * 10)} -composite"
+#  end
 
   century_commands = []
-  (0...num_decades).each do |decade_idx|
-    decade = decades[decade_idx]
-    if decade % 10 == 0
-      century_commands << %|-fill none -stroke black -draw "stroke-dasharray 5 5 path 'M 0,#{(num_decades - decade_idx) * (YEAR_HEIGHT * 10)} L #{width},#{(num_decades - decade_idx) * (YEAR_HEIGHT * 10)}'"|
-    end
-  end
+#  (0...num_decades).each do |decade_idx|
+#    decade = decades[decade_idx]
+#    if decade % 10 == 0
+#      century_commands << %|-fill none -stroke black -draw "stroke-dasharray 5 5 path 'M 0,#{(num_decades - decade_idx) * (YEAR_HEIGHT * 10)} L #{width},#{(num_decades - decade_idx) * (YEAR_HEIGHT * 10)}'"|
+#    end
+#  end
 
 
   # TODO: Add dashed lines at century boundaries
 
   full_command = base_command + " " + decade_commands.join(" ") + " " + century_commands.join(" ") + " " + term_command
 
-  image, status = Open3.capture2(full_command)
-  image
+  #image, status = Open3.capture2(full_command)
+  #image
+  
+  width = DECADE_WIDTH + 2 * BORDER_WIDTH + num_cols * (COL_WIDTH + BORDER_WIDTH)
+  height = BORDER_WIDTH + (YEAR_HEIGHT * 10) * num_decades
+  dp = ImagemagickDP.new(width, height, 'white')
+  dp.set_border(BORDER_WIDTH, 'black')
+  dp.build
 end
 
 CATEGORY_BG_COLORS = {
@@ -130,7 +136,7 @@ def draw(figures)
   figure_columns = assign_columns(figures)
   max_column_idx = figure_columns.values.max
   bg = draw_background(earliest_year, latest_year, max_column_idx + 1)
-  overlay_figures(bg, earliest_year, latest_year, figure_columns)
+  #overlay_figures(bg, earliest_year, latest_year, figure_columns)
 end
 
 #test = [{:name => "Frank", :birth_year => 1920, :death_year => 1935, :category => :philosophy},
