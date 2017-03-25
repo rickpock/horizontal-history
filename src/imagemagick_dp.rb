@@ -115,13 +115,6 @@ public
 
     @drawing_command = "#{@drawing_command}#{draw_command} "
   end
-#  century_commands = []
-#  (0...num_decades).each do |decade_idx|
-#    decade = decades[decade_idx]
-#    if decade % 10 == 0
-#      century_commands << %|-fill none -stroke black -draw "stroke-dasharray 5 5 path 'M 0,#{(num_decades - decade_idx) * (YEAR_HEIGHT * 10)} L #{width},#{(num_decades - decade_idx) * (YEAR_HEIGHT * 10)}'"|
-#    end
-#  end
 
   # position:
   # * x
@@ -192,38 +185,3 @@ public
     image
   end
 end
-#
-#def draw_background(start_year, end_year, num_cols)
-#  start_decade = (start_year.to_f / 10).floor
-#  end_decade = ((end_year.to_f / 10).ceil - 1)
-#
-#  num_decades = end_decade - start_decade + 1
-#
-#  border = "#{BORDER_WIDTH}x#{BORDER_WIDTH}"
-#  width = DECADE_WIDTH + 2 * BORDER_WIDTH + num_cols * (COL_WIDTH + BORDER_WIDTH)
-#  size = "#{width}x#{BORDER_WIDTH + (YEAR_HEIGHT * 10) * num_decades}"
-#  base_command = "convert -size #{size} canvas:white"
-#  term_command = "-bordercolor black -border #{border} png:-"
-#
-#  decades = (start_decade..end_decade).to_a
-#  decade_commands = (0...num_decades).map do |decade_idx|
-#    decade = decades[decade_idx]
-#    "\\( -bordercolor lightgray -border #{border} -size #{DECADE_WIDTH}x#{YEAR_HEIGHT*10 - BORDER_WIDTH} -gravity center label:'#{decade * 10}' \\) -gravity SouthWest -geometry +0+#{decade_idx * (YEAR_HEIGHT * 10)} -composite"
-#  end
-#
-#  century_commands = []
-#  (0...num_decades).each do |decade_idx|
-#    decade = decades[decade_idx]
-#    if decade % 10 == 0
-#      century_commands << %|-fill none -stroke black -draw "stroke-dasharray 5 5 path 'M 0,#{(num_decades - decade_idx) * (YEAR_HEIGHT * 10)} L #{width},#{(num_decades - decade_idx) * (YEAR_HEIGHT * 10)}'"|
-#    end
-#  end
-#
-#
-#  # TODO: Add dashed lines at century boundaries
-#
-#  full_command = base_command + " " + decade_commands.join(" ") + " " + century_commands.join(" ") + " " + term_command
-#
-#  image, status = Open3.capture2(full_command)
-#  image
-#end

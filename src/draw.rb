@@ -88,7 +88,7 @@ def draw_background(dp, start_year, end_year, num_cols)
     dp.draw_text(text_position, "#{decade * 10}", text_settings)
   end
 
-  # Draw century dividers 'M 0,#{(num_decades - decade_idx) * (YEAR_HEIGHT * 10)} L #{width},#{(num_decades - decade_idx) * (YEAR_HEIGHT * 10)}'
+  # Draw century dividers
   (0...(decades).length).each do |decade_idx|
     decade = decades[decade_idx]
     next if decade % 10 != 0
@@ -105,15 +105,9 @@ def draw_background(dp, start_year, end_year, num_cols)
       }]
     dp.draw_path(path, {:color => 'black', :dash_pattern => [5,5]})
   end
-#  century_commands = []
-#  (0...num_decades).each do |decade_idx|
-#    decade = decades[decade_idx]
-#    if decade % 10 == 0
-#      century_commands << %|-fill none -stroke black -draw "stroke-dasharray 5 5 path 'M 0,#{(num_decades - decade_idx) * (YEAR_HEIGHT * 10)} L #{width},#{(num_decades - decade_idx) * (YEAR_HEIGHT * 10)}'"|
-#    end
-#  end
 end
 
+# Draw historical figure life bars over the background
 def overlay_figures(dp, start_year, end_year, figure_columns)
   end_decade = ((end_year.to_f / 10).ceil - 1)
   effective_end_year = (end_decade + 1) * 10
