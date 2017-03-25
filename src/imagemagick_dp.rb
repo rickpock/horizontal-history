@@ -116,6 +116,22 @@ public
     @drawing_command = "#{@drawing_command}#{draw_command} "
   end
 
+  # stroke (same as stroke on draw_path)
+  #
+  # fill:
+  # * color
+  def draw_rectangle(x1, y1, x2, y2, stroke = {}, fill = {})
+    dash_expr = (stroke.nil? || stroke[:dash_pattern].nil?) ? "" : "stroke-dasharray #{stroke[:dash_pattern].join(" ")} "
+
+    stroke_color = (stroke.nil? || stroke[:color].nil?) ? "black" : stroke[:color]
+
+    fill_color = (fill.nil? || fill[:color].nil?) ? "none" : fill[:color]
+
+    draw_command = %|-fill #{fill_color} -stroke #{stroke_color} -draw "#{dash_expr}rectangle #{x1},#{y1} #{x2},#{y2}"|
+
+    @drawing_command = "#{@drawing_command}#{draw_command} "
+  end
+
   # position:
   # * x
   # * y

@@ -166,6 +166,7 @@ end
 #
 
 def draw(figures)
+  # Determine image size
   start_year = figures.map {|figure| figure[:birth_year]}.min
   end_year = figures.map {|figure| figure[:death_year]}.max
 
@@ -177,8 +178,26 @@ def draw(figures)
   num_cols = max_column_idx + 1
   width = DECADE_WIDTH + 2 * BORDER_WIDTH + num_cols * (COL_WIDTH + BORDER_WIDTH)
   height = BORDER_WIDTH + (YEAR_HEIGHT * 10) * num_decades
+
+  # Initialize the Drawing Provider
   dp = ImagemagickDP.new(width, height, 'white')
+
+  # Draw the background
   draw_background(dp, start_year, end_year, num_cols)
+
+  # Draw the figures
   overlay_figures(dp, start_year, end_year, figure_columns)
+
+  # Draw grayed-out area for the future
+  current_year = Time.now.year
+  end_decade = ((end_year.to_f / 10).ceil - 1)
+  effective_end_year = (end_decade + 1) * 10
+
+  dp.draw_rectangle(DECADE_WIDTH + 2 * BORDER_WIDTH, 0,
+                    width - BORDER_WIDTH, BORDER_WIDTH + (effective_end_year - (current_year)) * YEAR_HEIGHT,
+                    {:color => 'none'}, # stroke modifiers
+                    {:color => 'gray'}) # fill modifiers
+  
+  # Build the final image
   dp.build
 end
