@@ -85,6 +85,8 @@ public
     self
   end
 
+  # TODO: Support stroked paths
+
   # position:
   # * x
   # * y
@@ -99,9 +101,13 @@ public
   # * bg_color
   # * text_x_align
   # * text_y_align
+  #
+  # transform:
+  # * matrix
+  # * rotate
+  # * scale (currently unsupported)
+  # * translate (currently unsupported)
   def draw_text(position, text, settings = {}, transform = {})
-    # TODO: Support transforms
-
     # Extract parameters from `position`
     pos_gravity = determine_gravity(position[:x_align], position[:y_align])
 
@@ -126,7 +132,6 @@ public
     bg_expr = bg_color.nil? ? "" : "-background #{bg_color} "
 
     # Extract parameters from `transform`
-    STDERR.puts transform
     transform_expr = if transform.nil? || transform.empty?
                        ""
                      elsif ! transform[:matrix].nil?
@@ -139,7 +144,6 @@ public
 
     # Build command for drawing
     text_command = "\\( #{border_expr}#{bg_expr}#{color_expr}#{size_expr}-gravity #{text_gravity} label:'#{text}' #{transform_expr}\\) -gravity #{pos_gravity} -geometry +#{x}+#{y} -composite"
-    STDERR.puts text_command
     @drawing_command = "#{@drawing_command}#{text_command} "
 
     # Return self to support the builder pattern
@@ -187,103 +191,3 @@ end
 #  image, status = Open3.capture2(full_command)
 #  image
 #end
-#
-#CATEGORY_BG_COLORS = {
-#  :political => "'#66CCFF'",
-#  :cultural => "'#009999'",
-#  :religious => "'#000099'",
-#  :explorer => "'#9999FF'",
-#  :science => "'#00CC00'",
-#  :invention => "'#66FFCC'",
-#  :business => "'#009900'",
-#  :economics => "darkgray",
-#  :philosophy => "'#9900CC'",
-#  :art => "'#FF00FF'",
-#  :writing => "'#FF0000'",
-#  :music => "'#FF9933'",
-#  :entertainment => "'#FFFF00'",
-#  :sports => "'#996600'"}
-#CATEGORY_BG_COLORS.default = "lightgray"
-#
-#CATEGORY_FG_COLORS = {
-#  :political => "black",
-#  :cultural => "white",
-#  :religious => "white",
-#  :explorer => "white",
-#  :science => "black",
-#  :invention => "black",
-#  :business => "white",
-#  :economics => "white",
-#  :philosophy => "white",
-#  :art => "black",
-#  :writing => "black",
-#  :music => "black",
-#  :entertainment => "black",
-#  :sports => "white"}
-#CATEGORY_FG_COLORS.default = "black"
-#
-#def overlay_figures(base_image, start_year, end_year, figure_columns)
-#  end_decade = ((end_year.to_f / 10).ceil - 1)
-#  effective_end_year = (end_decade + 1) * 10
-#
-#  base_command = "convert -"
-#
-#  figure_commands = figure_columns.map do |figure, column_idx|
-#
-#    name = figure[:name]
-#    birth_year = figure[:birth_year]
-#    death_year = figure[:death_year]
-#    background = CATEGORY_BG_COLORS[figure[:category]]
-#    foreground = CATEGORY_FG_COLORS[figure[:category]]
-#
-#    "\\( -bordercolor black -border #{BORDER_WIDTH}x#{BORDER_WIDTH} -background #{background} -size #{(death_year - birth_year)*YEAR_HEIGHT - BORDER_WIDTH}x#{COL_WIDTH} -gravity center -fill #{foreground} label:'#{name}' -rotate 90 \\) -gravity NorthWest -geometry +#{DECADE_WIDTH + 3*BORDER_WIDTH + column_idx * (COL_WIDTH + BORDER_WIDTH)}+#{YEAR_HEIGHT*(effective_end_year - death_year) + BORDER_WIDTH} -composite"
-#  end
-#
-#  term_command = "-"
-#
-#
-#  full_command = base_command + " " + figure_commands.join(" ") + " " + term_command
-#
-#  image, status = Open3.capture2(full_command, :stdin_data=>base_image)
-#  image
-#end
-#
-## Outputs a map of figure -> column_idx
-#def assign_columns(figures)
-#  columns_last_year = []
-#  figure_columns = {}
-#
-#  ordered_figures = figures.sort_by {|figure| -figure[:death_year]}
-#  ordered_figures.each do |figure|
-#    # Find the first column available through the figures death year
-#    first_available_column = columns_last_year.find_index {|last_year| last_year >= figure[:death_year]}
-#
-#    if first_available_column.nil?
-#      # No column available, add a new one
-#      figure_columns[figure] = columns_last_year.length
-#      columns_last_year << figure[:birth_year]
-#    else
-#      figure_columns[figure] = first_available_column
-#      columns_last_year[first_available_column] = figure[:birth_year]
-#    end
-#  end
-#
-#  figure_columns
-#end
-#
-#def draw(figures)
-#  earliest_year = figures.map {|figure| figure[:birth_year]}.min
-#  latest_year = figures.map {|figure| figure[:death_year]}.max
-#
-#  figure_columns = assign_columns(figures)
-#  max_column_idx = figure_columns.values.max
-#  bg = draw_background(earliest_year, latest_year, max_column_idx + 1)
-#  overlay_figures(bg, earliest_year, latest_year, figure_columns)
-#end
-#
-##test = [{:name => "Frank", :birth_year => 1920, :death_year => 1935, :category => :philosophy},
-##  {:name => "Annie", :birth_year => 1952, :death_year => 2000, :category => :economics}]
-##
-##bg = draw_background(1920,1991,test.length)
-##
-##puts overlay_figures(bg, 1920, 1991, test)
