@@ -165,7 +165,7 @@ end
 # Main method
 #
 
-def draw(figures)
+def draw(provider_name, figures)
   # Determine image size
   start_year = figures.map {|figure| figure[:birth_year]}.min
   end_year = figures.map {|figure| figure[:death_year]}.max
@@ -180,7 +180,7 @@ def draw(figures)
   height = BORDER_WIDTH + (YEAR_HEIGHT * 10) * num_decades
 
   # Initialize the Drawing Provider
-  dp = ImagemagickDP.new(width, height, 'white')
+  dp = Object.const_get(provider_name).new(width, height, 'white')
 
   # Draw the background
   draw_background(dp, start_year, end_year, num_cols)
