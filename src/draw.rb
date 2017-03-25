@@ -1,6 +1,7 @@
-require 'Open3'
-
+#
 # Drawing constants
+#
+
 COL_WIDTH = 30
 DECADE_WIDTH = 60
 BORDER_WIDTH = 1
@@ -40,7 +41,9 @@ CATEGORY_FG_COLORS = {
   :sports => "white"}
 CATEGORY_FG_COLORS.default = "black"
 
+#
 # Helper methods
+#
 
 def get_decades(start_year, end_year)
   start_decade = (start_year.to_f / 10).floor
@@ -58,13 +61,17 @@ def get_canvas_size(start_year, end_year, num_cols)
   return width, height
 end
 
+#
 # Drawing methods
+#
 
 def draw_background(dp, start_year, end_year, num_cols)
   width, height = get_canvas_size(start_year, end_year, num_cols)
 
+  # Set a border around the canvas
   dp.set_border(BORDER_WIDTH, 'black')
 
+  # Draw decade labels
   decades = get_decades(start_year, end_year)
   (0...(decades).length).each do |decade_idx|
     decade = decades[decade_idx]
@@ -80,6 +87,31 @@ def draw_background(dp, start_year, end_year, num_cols)
     }
     dp.draw_text(text_position, "#{decade * 10}", text_settings)
   end
+
+  # Draw century dividers 'M 0,#{(num_decades - decade_idx) * (YEAR_HEIGHT * 10)} L #{width},#{(num_decades - decade_idx) * (YEAR_HEIGHT * 10)}'
+  (0...(decades).length).each do |decade_idx|
+    decade = decades[decade_idx]
+    next if decade % 10 != 0
+
+    y = (decades.length - decade_idx) * (YEAR_HEIGHT * 10)
+    path = [
+      {
+        :type => :start,
+        :x => 0, :y => y,
+      },
+      {
+        :type => :line,
+        :x => DECADE_WIDTH, :y => y,
+      }]
+    dp.draw_path(path, {:color => 'black', :dash_pattern => [5,5]})
+  end
+#  century_commands = []
+#  (0...num_decades).each do |decade_idx|
+#    decade = decades[decade_idx]
+#    if decade % 10 == 0
+#      century_commands << %|-fill none -stroke black -draw "stroke-dasharray 5 5 path 'M 0,#{(num_decades - decade_idx) * (YEAR_HEIGHT * 10)} L #{width},#{(num_decades - decade_idx) * (YEAR_HEIGHT * 10)}'"|
+#    end
+#  end
 end
 
 def overlay_figures(dp, start_year, end_year, figure_columns)
@@ -108,7 +140,9 @@ def overlay_figures(dp, start_year, end_year, figure_columns)
   end
 end
 
+#
 # Layout methods
+#
 
 # Outputs a map of figure -> column_idx
 def assign_columns(figures)
@@ -133,7 +167,9 @@ def assign_columns(figures)
   figure_columns
 end
 
+#
 # Main method
+#
 
 def draw(figures)
   start_year = figures.map {|figure| figure[:birth_year]}.min

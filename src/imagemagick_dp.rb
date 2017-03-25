@@ -85,7 +85,43 @@ public
     self
   end
 
-  # TODO: Support stroked paths
+  # path is an array of hashes of points and how the path is connected to that point:
+  # * type
+  # ** :start or :M or M
+  # ** :line or :L or L
+  # * x
+  # * y
+  #
+  # stroke:
+  # * color
+  # * dash_pattern (array of draw length, skip length)
+  def draw_path(path, stroke = {})
+    path_expr = path.map do |point|
+      case point[:type]
+      when :start, :M, 'M'
+        "M #{point[:x]},#{point[:y]}"
+      when :line, :L, 'L'
+        "L #{point[:x]},#{point[:y]}"
+      else
+        ""
+      end
+    end.join(" ")
+
+    dash_expr = (stroke.nil? || stroke[:dash_pattern].nil?) ? "" : "stroke-dasharray #{stroke[:dash_pattern].join(" ")} "
+
+    stroke_color = (stroke.nil? || stroke[:color].nil?) ? "black" : stroke[:color]
+
+    draw_command = %|-fill none -stroke #{stroke_color} -draw "#{dash_expr}path '#{path_expr}'"|
+
+    @drawing_command = "#{@drawing_command}#{draw_command} "
+  end
+#  century_commands = []
+#  (0...num_decades).each do |decade_idx|
+#    decade = decades[decade_idx]
+#    if decade % 10 == 0
+#      century_commands << %|-fill none -stroke black -draw "stroke-dasharray 5 5 path 'M 0,#{(num_decades - decade_idx) * (YEAR_HEIGHT * 10)} L #{width},#{(num_decades - decade_idx) * (YEAR_HEIGHT * 10)}'"|
+#    end
+#  end
 
   # position:
   # * x
@@ -143,7 +179,7 @@ public
                      end
 
     # Build command for drawing
-    text_command = "\\( #{border_expr}#{bg_expr}#{color_expr}#{size_expr}-gravity #{text_gravity} label:'#{text}' #{transform_expr}\\) -gravity #{pos_gravity} -geometry +#{x}+#{y} -composite"
+    text_command = "\\( #{border_expr}#{bg_expr}#{color_expr}#{size_expr}-stroke none -gravity #{text_gravity} label:'#{text}' #{transform_expr}\\) -gravity #{pos_gravity} -geometry +#{x}+#{y} -composite"
     @drawing_command = "#{@drawing_command}#{text_command} "
 
     # Return self to support the builder pattern
