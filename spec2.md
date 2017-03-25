@@ -42,7 +42,7 @@ The rectangles representing historical figures will not overlap. The selected hi
 
 The historical figure rectangles will be colored based on their category.
 
-:sparkles::new::sparkles: Area on the chart in the future will be "grayed-out" with a striped gray-and-white region. :sparkles::new::sparkles: 
+:sparkles::new::sparkles: Area on the chart in the future will be "grayed-out". :sparkles::new::sparkles: 
 
 # Output
 The output image will be in png format and piped to `stdout`.
