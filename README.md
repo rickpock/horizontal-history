@@ -31,7 +31,7 @@ The program outputs the png image data to stdout. Redirect the stream to the fil
 # Version 1.0 Spec
 [Spec](https://github.com/rickpock/horizontal-history/blob/master/spec.md)
 
-# Version 2.0 Spec
+# Version 2.0 Spec (Unreleased)
 [Spec](https://github.com/rickpock/horizontal-history/blob/master/spec2.md)
 
 # Legal Stuff
