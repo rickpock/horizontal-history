@@ -7,9 +7,9 @@ Each figure must have the following fields:
 * name
 * birth_year
 * death_year
- * Set to `nil` for someone still living
+  * Set to `nil` for someone still living
 * category
- * One of `:political`, `:cultural`, `:religious`, `:explorer`, `:science`, `:invention`, `:business`, `:economics`, `:philosophy`, `:art`, `:writing`, `:music`, `:entertainment`, `:sports`, and `:other`.
+  * One of `:political`, `:cultural`, `:religious`, `:explorer`, `:science`, `:invention`, `:business`, `:economics`, `:philosophy`, `:art`, `:writing`, `:music`, `:entertainment`, `:sports`, and `:other`.
 
 Example Data Format:
 ```yml

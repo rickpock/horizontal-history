@@ -15,7 +15,7 @@ It may work on additional platforms, but I've only developed and tested it on OS
 * [Ruby](https://www.ruby-lang.org/en/documentation/installation/) runtime 2.3.0+
 * Open3 Ruby gem
 * [ImageMagick](https://www.imagemagick.org/script/binary-releases.php)
- - For OS X, installed via [homebrew](http://brew.sh/) using `brew install imagemagick`.
+  - For OS X, installed via [homebrew](http://brew.sh/) using `brew install imagemagick`.
 
 # Usage
 `ruby src/horizhist [args] >[image_file]`
