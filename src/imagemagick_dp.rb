@@ -119,11 +119,27 @@ public
     border_thickness = settings[:border_thickness] || 0
     border_expr = border_color.nil? ? "" : "-bordercolor #{border_color} -border #{border_thickness}x#{border_thickness} "
 
+    color = settings[:color]
+    color_expr = color.nil? ? "" : "-fill #{color} "
+
     bg_color = settings[:bg_color]
     bg_expr = bg_color.nil? ? "" : "-background #{bg_color} "
 
+    # Extract parameters from `transform`
+    STDERR.puts transform
+    transform_expr = if transform.nil? || transform.empty?
+                       ""
+                     elsif ! transform[:matrix].nil?
+                       "-affine #{transform[:matrix].join(',')} -transform "
+                     elsif ! transform[:rotate].nil?
+                       "-rotate #{transform[:rotate]} "
+                     else # TODO: Support scale and translate transforms?
+                       ""
+                     end
+
     # Build command for drawing
-    text_command = "\\( #{border_expr}#{bg_expr}#{size_expr}-gravity #{text_gravity} label:'#{text}' \\) -gravity #{pos_gravity} -geometry +#{x}+#{y} -composite"
+    text_command = "\\( #{border_expr}#{bg_expr}#{color_expr}#{size_expr}-gravity #{text_gravity} label:'#{text}' #{transform_expr}\\) -gravity #{pos_gravity} -geometry +#{x}+#{y} -composite"
+    STDERR.puts text_command
     @drawing_command = "#{@drawing_command}#{text_command} "
 
     # Return self to support the builder pattern

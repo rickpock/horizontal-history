@@ -5,7 +5,7 @@ DECADE_WIDTH = 60
 BORDER_WIDTH = 1
 YEAR_HEIGHT = 3
 
-def draw_background(start_year, end_year, num_cols)
+def draw_background(dp, start_year, end_year, num_cols)
   start_decade = (start_year.to_f / 10).floor
   end_decade = ((end_year.to_f / 10).ceil - 1)
 
@@ -31,9 +31,6 @@ def draw_background(start_year, end_year, num_cols)
 #    end
 #  end
 
-
-  # TODO: Add dashed lines at century boundaries
-
   full_command = base_command + " " + decade_commands.join(" ") + " " + century_commands.join(" ") + " " + term_command
 
   #image, status = Open3.capture2(full_command)
@@ -42,7 +39,6 @@ def draw_background(start_year, end_year, num_cols)
   width = DECADE_WIDTH + 2 * BORDER_WIDTH + num_cols * (COL_WIDTH + BORDER_WIDTH)
   height = BORDER_WIDTH + (YEAR_HEIGHT * 10) * num_decades
 
-  dp = ImagemagickDP.new(width, height, 'white')
   dp.set_border(BORDER_WIDTH, 'black')
 
   decades = (start_decade..end_decade).to_a
@@ -60,9 +56,9 @@ def draw_background(start_year, end_year, num_cols)
     }
     dp.draw_text(text_position, "#{decade * 10}", text_settings)
   end
-
-  dp.build
 end
+
+TIME_BAR_TRANSFORM = {:rotate => 90}
 
 CATEGORY_BG_COLORS = {
   :political => "'#66CCFF'",
@@ -98,11 +94,9 @@ CATEGORY_FG_COLORS = {
   :sports => "white"}
 CATEGORY_FG_COLORS.default = "black"
 
-def overlay_figures(base_image, start_year, end_year, figure_columns)
+def overlay_figures(dp, start_year, end_year, figure_columns)
   end_decade = ((end_year.to_f / 10).ceil - 1)
   effective_end_year = (end_decade + 1) * 10
-
-  base_command = "convert -"
 
   figure_commands = figure_columns.map do |figure, column_idx|
 
@@ -112,16 +106,20 @@ def overlay_figures(base_image, start_year, end_year, figure_columns)
     background = CATEGORY_BG_COLORS[figure[:category]]
     foreground = CATEGORY_FG_COLORS[figure[:category]]
 
-    "\\( -bordercolor black -border #{BORDER_WIDTH}x#{BORDER_WIDTH} -background #{background} -size #{(death_year - birth_year)*YEAR_HEIGHT - BORDER_WIDTH}x#{COL_WIDTH} -gravity center -fill #{foreground} label:'#{name}' -rotate 90 \\) -gravity NorthWest -geometry +#{DECADE_WIDTH + 3*BORDER_WIDTH + column_idx * (COL_WIDTH + BORDER_WIDTH)}+#{YEAR_HEIGHT*(effective_end_year - death_year) + BORDER_WIDTH} -composite"
+    text_position = {
+      :x => DECADE_WIDTH + 3 * BORDER_WIDTH + column_idx * (COL_WIDTH + BORDER_WIDTH) - 1,
+      :y => YEAR_HEIGHT*(effective_end_year - death_year) + BORDER_WIDTH,
+      :height => COL_WIDTH, :width => (death_year - birth_year) * YEAR_HEIGHT,
+    }
+    text_settings = {
+      :text_x_align => :middle, :text_y_align => :center,
+      :border_thickness => BORDER_WIDTH, :border_color => 'black',
+      :bg_color => background, :color => foreground}
+
+    dp.draw_text(text_position, name, text_settings, TIME_BAR_TRANSFORM)
+
+    #"\\( -bordercolor black -border #{BORDER_WIDTH}x#{BORDER_WIDTH} -background #{background} -size #{(death_year - birth_year)*YEAR_HEIGHT - BORDER_WIDTH}x#{COL_WIDTH} -gravity center -fill #{foreground} label:'#{name}' -rotate 90 \\) -gravity NorthWest -geometry +#{DECADE_WIDTH + 3*BORDER_WIDTH + column_idx * (COL_WIDTH + BORDER_WIDTH)}+#{YEAR_HEIGHT*(effective_end_year - death_year) + BORDER_WIDTH} -composite"
   end
-
-  term_command = "-"
-
-
-  full_command = base_command + " " + figure_commands.join(" ") + " " + term_command
-
-  image, status = Open3.capture2(full_command, :stdin_data=>base_image)
-  image
 end
 
 # Outputs a map of figure -> column_idx
@@ -153,8 +151,22 @@ def draw(figures)
 
   figure_columns = assign_columns(figures)
   max_column_idx = figure_columns.values.max
-  bg = draw_background(earliest_year, latest_year, max_column_idx + 1)
-  #overlay_figures(bg, earliest_year, latest_year, figure_columns)
+
+  start_year = earliest_year
+  end_year = latest_year
+
+  start_decade = (start_year.to_f / 10).floor
+  end_decade = ((end_year.to_f / 10).ceil - 1)
+
+  num_decades = end_decade - start_decade + 1
+
+  num_cols = max_column_idx + 1
+  width = DECADE_WIDTH + 2 * BORDER_WIDTH + num_cols * (COL_WIDTH + BORDER_WIDTH)
+  height = BORDER_WIDTH + (YEAR_HEIGHT * 10) * num_decades
+  dp = ImagemagickDP.new(width, height, 'white')
+  draw_background(dp, earliest_year, latest_year, num_cols)
+  overlay_figures(dp, earliest_year, latest_year, figure_columns)
+  dp.build
 end
 
 #test = [{:name => "Frank", :birth_year => 1920, :death_year => 1935, :category => :philosophy},
