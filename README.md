@@ -31,6 +31,9 @@ The program outputs the png image data to stdout. Redirect the stream to the fil
 # Version 1.0 Spec
 [Spec](https://github.com/rickpock/horizontal-history/blob/master/spec.md)
 
+# Version 2.0 Spec
+[Spec](https://github.com/rickpock/horizontal-history/blob/master/spec2.md)
+
 # Legal Stuff
 This project is licensed under the MIT License. Check the [LICENSE file](https://raw.githubusercontent.com/rickpock/horizontal-history/master/LICENSE) for details.
 
