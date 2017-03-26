@@ -122,6 +122,6 @@ public
   end
 
   def build()
-    puts @doc.to_s
+    @doc.to_s
   end
 end

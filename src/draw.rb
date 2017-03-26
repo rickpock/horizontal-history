@@ -199,5 +199,5 @@ def draw(provider_name, figures)
                     {:color => 'gray'}) # fill modifiers
   
   # Build the final image
-  dp.build
+  puts dp.build
 end
