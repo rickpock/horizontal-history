@@ -11,6 +11,10 @@ args = ARGV.select {|arg| arg.start_with? "-"}.map {|arg| arg[1..-1]}
 # This allows us to avoid dependencies if we're not using a specific drawing provider
 provider_dependencies =
   {
+    "SvgDP" => Proc.new do
+      require_relative 'svg_dp.rb'
+    end,
+
     "ImagemagickDP" => Proc.new do
       require_relative 'imagemagick_dp.rb'
     end,
@@ -24,11 +28,11 @@ provider_dependencies =
 # Determine drawing provider based on specified output file format
 # The provider_name should exactly match the class name of the provider
 provider_name = if args.include? "svg"
-             nil
+             "SvgDP"
            elsif args.include? "png"
              "ImagemagickDP"
            else
-             nil
+             "SvgDP"
            end
 
 provider_dependencies[provider_name].call
