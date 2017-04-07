@@ -34,13 +34,14 @@ public
       svg_attr = {
         'width' => "#{@width}#{UNITS}",
         'height' => "#{@height}#{UNITS}",
+        'viewBox' => "0 0 #{@width} #{@height}",
         'xmlns' => 'http://www.w3.org/2000/svg',
         'version' => '1.1',
       }
       xml.svg(svg_attr) do
         fill_attr = {
-          'x' => "0#{UNITS}", 'y' => "0#{UNITS}",
-          'width' => "#{@width}#{UNITS}", 'height' => "#{@height}#{UNITS}",
+          'x' => "0", 'y' => "0",
+          'width' => "#{@width}", 'height' => "#{@height}",
           'fill' => bg_color,
         }
         xml.rect(fill_attr)
@@ -54,9 +55,9 @@ public
     # Border rectangle
     add_elements do |xml|
       border_attr = {
-        'x' => "0#{UNITS}", 'y' => "0#{UNITS}",
-        'width' => "#{@width}#{UNITS}", 'height' => "#{@height}#{UNITS}",
-        'stroke' => color, 'stroke-width' => "#{thickness}#{UNITS}",
+        'x' => "0", 'y' => "0",
+        'width' => "#{@width}", 'height' => "#{@height}",
+        'stroke' => color, 'stroke-width' => "#{thickness}",
         'fill' => 'none',
       }
       xml.rect(border_attr);
@@ -77,7 +78,30 @@ public
   # * color
   # * dash_pattern (array of draw length, skip length)
   def draw_path(path, stroke = {})
-    # TODO
+    path_expr = path.map do |point|
+      case point[:type]
+      when :start, :M, 'M'
+        "M #{point[:x]} #{point[:y]}"
+      when :line, :L, 'L'
+        "L #{point[:x]} #{point[:y]}"
+      else
+        ""
+      end
+    end.join(" ")
+
+    add_elements do |xml|
+      path_attr = {
+        'd' => path_expr,
+        'stroke' => (stroke.nil? || stroke[:color].nil?) ? "black" : stroke[:color],
+        'fill' => 'none',
+      }
+
+      unless stroke.nil? || stroke[:dash_pattern].nil?
+        path_attr['stroke-dasharray'] = stroke[:dash_pattern].join(",")
+      end
+
+      xml.path(path_attr)
+    end
 
     # Return self to support the builder pattern
     self
@@ -88,7 +112,22 @@ public
   # fill:
   # * color
   def draw_rectangle(x1, y1, x2, y2, stroke = {}, fill = {})
-    # TODO
+    style_arry = []
+    unless stroke.nil? || stroke[:dash_pattern].nil?
+      style_arry << "stroke-dasharray:#{stroke[:dash_pattern].join(",")}"
+    end
+    style_arry << "color:#{(stroke.nil? || stroke[:color].nil?) ? "black" : stroke[:color]}"
+    style_arry << "fill:#{(fill.nil? || fill[:color].nil?) ? "none" : fill[:color]}"
+
+    add_elements do |xml|
+      rect_attr = {
+        'x' => "#{x1}", 'y' => "#{y1}",
+        'width' => "#{x2-x1}", 'height' => "#{y2-y1}",
+        'style' => style_arry.join(';'),
+      }
+
+      xml.rect(rect_attr)
+    end
 
     # Return self to support the builder pattern
     self
