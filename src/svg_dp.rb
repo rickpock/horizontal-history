@@ -133,6 +133,40 @@ public
     self
   end
 
+  # Handle edge cases of x_align or y_align not being defined.
+  def effective_x_align(x_align, y_align)
+    case x_align
+    when :left, :middle, :right
+      x_align
+    else
+      # Default horizontal alignment depends on vertical alignment
+      # If vertical alignment is set to top or bottom, we assume it should be centered at top/bottom
+      case y_align
+      when :top, :bottom
+        :middle
+      else
+        :left
+      end
+    end
+  end
+
+  # Handle edge cases of x_align or y_align not being defined.
+  def effective_y_align(x_align, y_align)
+    case y_align
+    when :top, :center, :bottom
+      y_align
+    else
+      # Default vertical alignment depends on horizontal alignment
+      # If horizontal alignment is set to left or right, we assume it should be centered at left/right
+      case x_align
+      when :left, :right
+        :center
+      else
+        :top
+      end
+    end
+  end
+
   # position:
   # * x
   # * y
@@ -154,7 +188,90 @@ public
   # * scale (currently unsupported)
   # * translate (currently unsupported)
   def draw_text(position, text, settings = {}, transform = {})
-    # TODO
+    # TODO: Apply border and fill
+    # TODO: Apply transfomr
+
+    # The text alignment is relative to a single point, rather than a rectangle.
+    # What point should be used depends on the text alignment.
+    # For example, if we want the text aligned right, the x value should be the right of the text.
+    x_offset =
+      case effective_x_align(settings[:text_x_align], settings[:text_y_align])
+      when :left
+        0
+      when :middle
+        position[:width] / 2.0
+      when :right
+        position[:width]
+      end
+
+    y_offset =
+      case effective_y_align(settings[:text_x_align], settings[:text_y_align])
+      when :top
+        0
+      when :center
+        position[:height] / 2.0
+      when :bottom
+        position[:height]
+      end
+
+    # Now we tranform into coordinates relative to the top-left corner since SVG
+    # doesn't provide a way to specify coordinate relative to any other position.
+    # An actual transform cannot be used for this, since that would transform everything being drawn, including
+    # the text itself, instead of just the position.
+    left_x =
+      case effective_x_align(position[:x_align], position[:y_align])
+      when :left
+        position[:x]
+      when :middle
+        position[:x] + (@width / 2.0) - (position[:width] / 2.0)
+      when :right
+        @width - position[:x] - position[:width]
+      end + x_offset
+
+    top_y =
+      case effective_y_align(position[:x_align], position[:y_align])
+      when :top
+        position[:y]
+      when :center
+        position[:y] + (@height / 2.0) - (position[:height] / 2.0)
+      when :bottom
+        @height - position[:y] - position[:height]
+      end + y_offset
+
+    add_elements do |xml|
+      text_attr = {
+        'x' => left_x, 'y' => top_y,
+      }
+      unless settings[:text_x_align].nil?
+        text_attr["text-anchor"] =
+          case settings[:text_x_align]
+          when :left
+            "start"
+          when :middle
+            "middle"
+          when :right
+            "end"
+          else
+            "start"
+          end
+      end
+      unless settings[:text_y_align].nil?
+        text_attr["alignment-baseline"] =
+          case settings[:text_y_align]
+          when :top
+            "hanging"
+          when :center
+            "central"
+          when :bottom
+            "baseline"
+          else
+            "hanging"
+          end
+      end
+
+      xml.text_(text_attr) { xml.text text }
+    end
+
 
     # Return self to support the builder pattern
     self
