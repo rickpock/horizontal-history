@@ -124,7 +124,7 @@ public
     unless stroke.nil? || stroke[:dash_pattern].nil?
       style_arry << "stroke-dasharray:#{stroke[:dash_pattern].join(",")}"
     end
-    style_arry << "color:#{(stroke.nil? || stroke[:color].nil?) ? "black" : fix_color(stroke[:color])}"
+    style_arry << "stroke:#{(stroke.nil? || stroke[:color].nil?) ? "black" : fix_color(stroke[:color])}"
     style_arry << "fill:#{(fill.nil? || fill[:color].nil?) ? "none" : fix_color(fill[:color])}"
     unless stroke.nil? || stroke[:thickness].nil?
       style_arry << "stroke-width:#{stroke[:thickness]}"
