@@ -17,6 +17,9 @@ private
   DEFAULT_BG_COLOR = 'white'
   DEFAULT_BORDER_COLOR = 'black'
 
+  @bg_color = DEFAULT_BG_COLOR
+  @bg_thickness = 1
+
   # Adds elements as if calling the builder within the 'svg' element
   def add_elements
     Nokogiri::XML::Builder.with(@doc.at('svg')) do |xml|
@@ -56,16 +59,8 @@ public
   end
 
   def set_border(thickness, color = DEFAULT_BORDER_COLOR)
-    # Border rectangle
-    add_elements do |xml|
-      border_attr = {
-        'x' => "0", 'y' => "0",
-        'width' => "#{@width}", 'height' => "#{@height}",
-        'stroke' => color, 'stroke-width' => "#{thickness}",
-        'fill' => 'none',
-      }
-      xml.rect(border_attr);
-    end
+    @bg_thickness = thickness
+    @bg_color = color
 
     # Return self to support the builder pattern
     self
@@ -299,6 +294,17 @@ public
   end
 
   def build()
+    # Border rectangle
+    add_elements do |xml|
+      border_attr = {
+        'x' => "0", 'y' => "0",
+        'width' => "#{@width}", 'height' => "#{@height}",
+        'stroke' => @bg_color, 'stroke-width' => "#{@bg_thickness}",
+        'fill' => 'none',
+      }
+      xml.rect(border_attr);
+    end
+
     @doc.to_s
   end
 end
