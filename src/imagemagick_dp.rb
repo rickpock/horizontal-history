@@ -82,6 +82,8 @@ public
   def set_border(thickness, color = DEFAULT_BORDER_COLOR)
     @border_color = color
     @border_size = "#{thickness}x#{thickness}"
+
+    # Return self to support the builder pattern
     self
   end
 
@@ -114,6 +116,9 @@ public
     draw_command = %|-fill none -stroke #{stroke_color} -draw "#{dash_expr}path '#{path_expr}'"|
 
     @drawing_command = "#{@drawing_command}#{draw_command} "
+
+    # Return self to support the builder pattern
+    self
   end
 
   # stroke (same as stroke on draw_path)
@@ -130,6 +135,9 @@ public
     draw_command = %|-fill #{fill_color} -stroke #{stroke_color} -draw "#{dash_expr}rectangle #{x1},#{y1} #{x2},#{y2}"|
 
     @drawing_command = "#{@drawing_command}#{draw_command} "
+
+    # Return self to support the builder pattern
+    self
   end
 
   # position:
