@@ -52,8 +52,7 @@ Historical figures are specified as arguments on the command line. Arguments beg
 
 :sparkles::new::sparkles: Output format is specified with an argument beginning with a hyphen `-`. Valid options are: :sparkles::new::sparkles:
 * `-svg` (default)
-
-:sparkles::new::sparkles: png output format is no longer supported :sparkles::new::sparkles:
+* `-png`
 
 Example:
 ```ruby src/horizhist.rb "George Washington" :political > out.svg```
