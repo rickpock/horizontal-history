@@ -198,7 +198,7 @@ def draw(provider_name, figures)
 
   dp.draw_rectangle(DECADE_WIDTH, 0,
                     width, (effective_end_year - current_year) * YEAR_HEIGHT,
-                    {:color => 'none'}, # stroke modifiers
+                    {:color => 'gray'}, # stroke modifiers
                     {:color => 'gray'}) # fill modifiers
   
   # Build the final image
