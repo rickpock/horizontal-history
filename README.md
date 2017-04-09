@@ -22,7 +22,7 @@ It has specifically been tested on OS X, with images svg images rendered using C
 `ruby src/horizhist [args] [format] >[image_file]`
 `args` can be a list of names of historical figures or categories of historical figures or both. `format` can be `-svg` or `-png`. See the [spec](https://github.com/rickpock/horizontal-history/blob/master/spec.md) for details.
 
-The program outputs the png image data to stdout. Redirect the stream to the filename of your choice.
+The program outputs the image data to stdout. Redirect the stream to the filename of your choice.
 
 ## Example
 `ruby src/horizhist.rb "Nelson Mandela" :business > doc/example-output.svg`
