@@ -55,10 +55,10 @@ end
 def get_canvas_size(start_year, end_year, num_cols)
   decades = get_decades(start_year, end_year)
 
-  width = DECADE_WIDTH + 2 * BORDER_WIDTH + num_cols * (COL_WIDTH + BORDER_WIDTH)
-  height = BORDER_WIDTH + (YEAR_HEIGHT * 10) * decades.length
+  width = DECADE_WIDTH + num_cols * (COL_WIDTH)
+  height = (YEAR_HEIGHT * 10) * decades.length
 
-  return width, height
+  return width*3, height
 end
 
 #
@@ -79,7 +79,7 @@ def draw_background(dp, start_year, end_year, num_cols)
     text_position = {
       :x => 0, :y => decade_idx * (YEAR_HEIGHT * 10),
       :x_align => :left, :y_align => :bottom,
-      :width => DECADE_WIDTH, :height => (YEAR_HEIGHT * 10) - BORDER_WIDTH,
+      :width => DECADE_WIDTH, :height => (YEAR_HEIGHT * 10),
     }
     text_settings = {
       :text_x_align => :middle, :text_y_align => :center,
@@ -120,17 +120,20 @@ def overlay_figures(dp, start_year, end_year, figure_columns)
     background = CATEGORY_BG_COLORS[figure[:category]]
     foreground = CATEGORY_FG_COLORS[figure[:category]]
 
+    x = DECADE_WIDTH + column_idx * COL_WIDTH
+    y = YEAR_HEIGHT * (effective_end_year - death_year)
+    height = COL_WIDTH
+    width = (death_year - birth_year) * YEAR_HEIGHT
     text_position = {
-      :x => DECADE_WIDTH + 3 * BORDER_WIDTH + column_idx * (COL_WIDTH + BORDER_WIDTH) - 1,
-      :y => YEAR_HEIGHT*(effective_end_year - death_year) + BORDER_WIDTH,
-      :height => COL_WIDTH, :width => (death_year - birth_year) * YEAR_HEIGHT,
+      :x => x, :y => y,
+      :height => height, :width => width,
     }
     text_settings = {
       :text_x_align => :middle, :text_y_align => :center,
       :border_thickness => BORDER_WIDTH, :border_color => 'black',
       :bg_color => background, :color => foreground}
 
-    dp.draw_text(text_position, name, text_settings, {:rotate => 90})
+    dp.draw_text(text_position, name, text_settings, {:rotate => 90, :rotate_origin => [x + height/2, y + height/2]})
   end
 end
 
@@ -165,7 +168,8 @@ end
 # Main method
 #
 
-def draw(figures)
+def draw(provider_name, figures)
+  # Determine image size
   start_year = figures.map {|figure| figure[:birth_year]}.min
   end_year = figures.map {|figure| figure[:death_year]}.max
 
@@ -175,10 +179,28 @@ def draw(figures)
   num_decades = get_decades(start_year, end_year).length
 
   num_cols = max_column_idx + 1
-  width = DECADE_WIDTH + 2 * BORDER_WIDTH + num_cols * (COL_WIDTH + BORDER_WIDTH)
-  height = BORDER_WIDTH + (YEAR_HEIGHT * 10) * num_decades
-  dp = ImagemagickDP.new(width, height, 'white')
+  width = DECADE_WIDTH + num_cols * COL_WIDTH
+  height = (YEAR_HEIGHT * 10) * num_decades
+
+  # Initialize the Drawing Provider
+  dp = Object.const_get(provider_name).new(width, height, 'white')
+
+  # Draw the background
   draw_background(dp, start_year, end_year, num_cols)
+
+  # Draw the figures
   overlay_figures(dp, start_year, end_year, figure_columns)
-  dp.build
+
+  # Draw grayed-out area for the future
+  current_year = Time.now.year
+  end_decade = ((end_year.to_f / 10).ceil - 1)
+  effective_end_year = (end_decade + 1) * 10
+
+  dp.draw_rectangle(DECADE_WIDTH, 0,
+                    width, (effective_end_year - current_year) * YEAR_HEIGHT,
+                    {:color => 'gray'}, # stroke modifiers
+                    {:color => 'gray'}) # fill modifiers
+  
+  # Build the final image
+  puts dp.build
 end
