@@ -24,6 +24,10 @@ private
     end
   end
 
+  def fix_color(color)
+    color.nil? ? nil : color.sub(/^'(.*)'$/, '\1')
+  end
+
 public
   def initialize(width, height, bg_color = DEFAULT_BG_COLOR)
     @width = width
@@ -76,6 +80,7 @@ public
   #
   # stroke:
   # * color
+  # * thickness
   # * dash_pattern (array of draw length, skip length)
   def draw_path(path, stroke = {})
     path_expr = path.map do |point|
@@ -92,12 +97,15 @@ public
     add_elements do |xml|
       path_attr = {
         'd' => path_expr,
-        'stroke' => (stroke.nil? || stroke[:color].nil?) ? "black" : stroke[:color],
+        'stroke' => (stroke.nil? || stroke[:color].nil?) ? "black" : fix_color(stroke[:color]),
         'fill' => 'none',
       }
 
       unless stroke.nil? || stroke[:dash_pattern].nil?
         path_attr['stroke-dasharray'] = stroke[:dash_pattern].join(",")
+      end
+      unless stroke.nil? || stroke[:thickness].nil?
+        path_attr['stroke-width'] = stroke[:thickness]
       end
 
       xml.path(path_attr)
@@ -116,8 +124,11 @@ public
     unless stroke.nil? || stroke[:dash_pattern].nil?
       style_arry << "stroke-dasharray:#{stroke[:dash_pattern].join(",")}"
     end
-    style_arry << "color:#{(stroke.nil? || stroke[:color].nil?) ? "black" : stroke[:color]}"
-    style_arry << "fill:#{(fill.nil? || fill[:color].nil?) ? "none" : fill[:color]}"
+    style_arry << "color:#{(stroke.nil? || stroke[:color].nil?) ? "black" : fix_color(stroke[:color])}"
+    style_arry << "fill:#{(fill.nil? || fill[:color].nil?) ? "none" : fix_color(fill[:color])}"
+    unless stroke.nil? || stroke[:thickness].nil?
+      style_arry << "stroke-width:#{stroke[:thickness]}"
+    end
 
     add_elements do |xml|
       rect_attr = {
@@ -188,8 +199,7 @@ public
   # * scale (currently unsupported)
   # * translate (currently unsupported)
   def draw_text(position, text, settings = {}, transform = {})
-    # TODO: Apply border and fill
-    # TODO: Apply transfomr
+    # TODO: Apply transform
 
     # The text alignment is relative to a single point, rather than a rectangle.
     # What point should be used depends on the text alignment.
@@ -226,7 +236,7 @@ public
         position[:x] + (@width / 2.0) - (position[:width] / 2.0)
       when :right
         @width - position[:x] - position[:width]
-      end + x_offset
+      end
 
     top_y =
       case effective_y_align(position[:x_align], position[:y_align])
@@ -236,11 +246,22 @@ public
         position[:y] + (@height / 2.0) - (position[:height] / 2.0)
       when :bottom
         @height - position[:y] - position[:height]
-      end + y_offset
+      end
+
+    # SVG doesn't support fill options for the text background, so we'll draw
+    # a rectangle as the background
+    unless settings[:bg_color].nil? && settings[:border_thickness].nil?
+      draw_rectangle(
+        left_x, top_y,
+        left_x + position[:width], top_y + position[:height],
+        {:thickness => settings[:border_thickness], :color => settings[:border_color]},
+        {:color => settings[:bg_color]}
+      )
+    end
 
     add_elements do |xml|
       text_attr = {
-        'x' => left_x, 'y' => top_y,
+        'x' => left_x + x_offset, 'y' => top_y + y_offset,
       }
       unless settings[:text_x_align].nil?
         text_attr["text-anchor"] =
