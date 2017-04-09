@@ -58,7 +58,7 @@ def get_canvas_size(start_year, end_year, num_cols)
   width = DECADE_WIDTH + num_cols * (COL_WIDTH)
   height = (YEAR_HEIGHT * 10) * decades.length
 
-  return width, height
+  return width*3, height
 end
 
 #
@@ -120,17 +120,20 @@ def overlay_figures(dp, start_year, end_year, figure_columns)
     background = CATEGORY_BG_COLORS[figure[:category]]
     foreground = CATEGORY_FG_COLORS[figure[:category]]
 
+    x = DECADE_WIDTH + column_idx * COL_WIDTH
+    y = YEAR_HEIGHT * (effective_end_year - death_year)
+    height = COL_WIDTH
+    width = (death_year - birth_year) * YEAR_HEIGHT
     text_position = {
-      :x => DECADE_WIDTH + column_idx * COL_WIDTH - 1,
-      :y => YEAR_HEIGHT * (effective_end_year - death_year),
-      :height => COL_WIDTH, :width => (death_year - birth_year) * YEAR_HEIGHT,
+      :x => x, :y => y,
+      :height => height, :width => width,
     }
     text_settings = {
       :text_x_align => :middle, :text_y_align => :center,
       :border_thickness => BORDER_WIDTH, :border_color => 'black',
       :bg_color => background, :color => foreground}
 
-    dp.draw_text(text_position, name, text_settings, {:rotate => 90})
+    dp.draw_text(text_position, name, text_settings, {:rotate => 90, :rotate_origin => [x + height/2, y + height/2]})
   end
 end
 

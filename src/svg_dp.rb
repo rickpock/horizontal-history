@@ -65,6 +65,31 @@ private
     end
   end
 
+  # transform:
+  # * matrix (currently unsupported)
+  # * rotate
+  # * rotate_origin
+  # * scale (currently unsupported)
+  # * translate (currently unsupported)
+  def build_transform_attr(transform = {})
+    # TODO: Support matrix, scale, and translate transforms
+    "" if transform.nil?
+
+    transforms = []
+
+    unless transform[:rotate].nil?
+      unless transform[:rotate_origin].nil?
+        transforms << "translate(#{transform[:rotate_origin].join(",")})"
+      end
+      transforms << "rotate(#{transform[:rotate]})"
+      unless transform[:rotate_origin].nil?
+        transforms << "translate(#{transform[:rotate_origin].map{|el| -el}.join(",")})"
+      end
+    end
+
+    transforms.join(" ")
+  end
+
 public
   def initialize(width, height, bg_color = DEFAULT_BG_COLOR)
     @width = width
@@ -148,7 +173,9 @@ public
   #
   # fill:
   # * color
-  def draw_rectangle(x1, y1, x2, y2, stroke = {}, fill = {})
+  #
+  # transform (same as transform on draw_text)
+  def draw_rectangle(x1, y1, x2, y2, stroke = {}, fill = {}, transform = {})
     style_arry = []
     unless stroke.nil? || stroke[:dash_pattern].nil?
       style_arry << "stroke-dasharray:#{stroke[:dash_pattern].join(",")}"
@@ -165,6 +192,10 @@ public
         'width' => "#{x2-x1}", 'height' => "#{y2-y1}",
         'style' => style_arry.join(';'),
       }
+      
+      unless transform.nil?
+        rect_attr['transform'] = build_transform_attr(transform)
+      end
 
       xml.rect(rect_attr)
     end
@@ -189,13 +220,12 @@ public
   # * text_y_align
   #
   # transform:
-  # * matrix
+  # * matrix (currently unsupported)
   # * rotate
+  # * rotate_origin
   # * scale (currently unsupported)
   # * translate (currently unsupported)
   def draw_text(position, text, settings = {}, transform = {})
-    # TODO: Apply transform
-
     # The text alignment is relative to a single point, rather than a rectangle.
     # What point should be used depends on the text alignment.
     # For example, if we want the text aligned right, the x value should be the right of the text.
@@ -250,7 +280,8 @@ public
         left_x, top_y,
         left_x + position[:width], top_y + position[:height],
         {:thickness => settings[:border_thickness], :color => settings[:border_color]},
-        {:color => settings[:bg_color]}
+        {:color => settings[:bg_color]},
+        transform
       )
     end
 
@@ -283,6 +314,12 @@ public
           else
             "hanging"
           end
+      end
+      unless transform.nil? || transform[:rotate].nil?
+        text_attr["transform"] = "rotate(#{transform[:rotate]})"
+      end
+      unless transform.nil?
+        text_attr['transform'] = build_transform_attr(transform)
       end
 
       xml.text_(text_attr) { xml.text text }
