@@ -16,6 +16,7 @@ It has specifically been tested on OS X, with images svg images rendered using C
 * For PNG output:
   - [ImageMagick](https://www.imagemagick.org/script/binary-releases.php)
     - For OS X, installed via [homebrew](http://brew.sh/) using `brew install imagemagick`.
+  - RMagick gem (installed via `bundle`)
 
 # Usage
 `ruby src/horizhist [args] >[image_file]`
