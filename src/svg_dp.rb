@@ -31,6 +31,40 @@ private
     color.nil? ? nil : color.sub(/^'(.*)'$/, '\1')
   end
 
+  # Handle edge cases of x_align or y_align not being defined.
+  def effective_x_align(x_align, y_align)
+    case x_align
+    when :left, :middle, :right
+      x_align
+    else
+      # Default horizontal alignment depends on vertical alignment
+      # If vertical alignment is set to top or bottom, we assume it should be centered at top/bottom
+      case y_align
+      when :top, :bottom
+        :middle
+      else
+        :left
+      end
+    end
+  end
+
+  # Handle edge cases of x_align or y_align not being defined.
+  def effective_y_align(x_align, y_align)
+    case y_align
+    when :top, :center, :bottom
+      y_align
+    else
+      # Default vertical alignment depends on horizontal alignment
+      # If horizontal alignment is set to left or right, we assume it should be centered at left/right
+      case x_align
+      when :left, :right
+        :center
+      else
+        :top
+      end
+    end
+  end
+
 public
   def initialize(width, height, bg_color = DEFAULT_BG_COLOR)
     @width = width
@@ -137,40 +171,6 @@ public
 
     # Return self to support the builder pattern
     self
-  end
-
-  # Handle edge cases of x_align or y_align not being defined.
-  def effective_x_align(x_align, y_align)
-    case x_align
-    when :left, :middle, :right
-      x_align
-    else
-      # Default horizontal alignment depends on vertical alignment
-      # If vertical alignment is set to top or bottom, we assume it should be centered at top/bottom
-      case y_align
-      when :top, :bottom
-        :middle
-      else
-        :left
-      end
-    end
-  end
-
-  # Handle edge cases of x_align or y_align not being defined.
-  def effective_y_align(x_align, y_align)
-    case y_align
-    when :top, :center, :bottom
-      y_align
-    else
-      # Default vertical alignment depends on horizontal alignment
-      # If horizontal alignment is set to left or right, we assume it should be centered at left/right
-      case x_align
-      when :left, :right
-        :center
-      else
-        :top
-      end
-    end
   end
 
   # position:
