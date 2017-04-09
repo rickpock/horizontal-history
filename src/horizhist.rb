@@ -1,6 +1,5 @@
 require_relative 'data.rb'
 require_relative 'draw.rb'
-require_relative 'imagemagick_dp.rb'
 
 # Parse arguments
 figure_names = ARGV.reject {|arg| arg.start_with?(":") || arg.start_with?("-")}
@@ -15,8 +14,9 @@ provider_dependencies =
       require_relative 'svg_dp.rb'
     end,
 
-    "ImagemagickDP" => Proc.new do
-      require_relative 'imagemagick_dp.rb'
+    "PngDP" => Proc.new do
+      require_relative 'png_dp.rb'
+      require_relative 'svg_dp.rb'  # The PNG drawing provider simply converts an svg into png
     end,
 
     nil => Proc.new do
@@ -30,7 +30,7 @@ provider_dependencies =
 provider_name = if args.include? "svg"
              "SvgDP"
            elsif args.include? "png"
-             "ImagemagickDP"
+             "PngDP"
            else
              "SvgDP"
            end
