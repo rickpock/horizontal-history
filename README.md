@@ -13,6 +13,7 @@ It has specifically been tested on OS X, with images svg images rendered using C
 
 # Prerequisities
 * [Ruby](https://www.ruby-lang.org/en/documentation/installation/) runtime 2.3.0+
+* nokogiri gem (installed via `bundle`)
 * For PNG output:
   - [ImageMagick](https://www.imagemagick.org/script/binary-releases.php)
     - For OS X, installed via [homebrew](http://brew.sh/) using `brew install imagemagick`.
