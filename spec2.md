@@ -45,7 +45,7 @@ The historical figure rectangles will be colored based on their category.
 :sparkles::new::sparkles: Area on the chart in the future will be "grayed-out". :sparkles::new::sparkles: 
 
 # Output
-The output image will be in png format and piped to `stdout`.
+The output image will be piped to `stdout`.
 
 # Usage
 Historical figures are specified as arguments on the command line. Arguments beginning with a colon are interpreted as a category. All historical figures in the data files matching that category will be included. Argument not beginning with a colon are interpreted as a name.
