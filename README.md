@@ -9,7 +9,7 @@ The project generates images charting the lifetimes of historical figures.
 # Supported Platforms
 This should work on any platform
 
-It has specifically been tested on OS X, with images svg images rendered using Chrome.
+It has specifically been tested on OS X, with svg images rendered using Chrome.
 
 # Prerequisities
 * [Ruby](https://www.ruby-lang.org/en/documentation/installation/) runtime 2.3.0+
