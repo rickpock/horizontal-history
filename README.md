@@ -7,7 +7,7 @@ This project is inspired by Tim Urban's ["Horizontal History" article](http://wa
 The project generates images charting the lifetimes of historical figures.
 
 # Supported Platforms
-This should work on any platform
+This should work on any platform.
 
 It has specifically been tested on OS X, with svg images rendered using Chrome.
 
@@ -21,7 +21,7 @@ It has specifically been tested on OS X, with svg images rendered using Chrome.
 
 # Usage
 `ruby src/horizhist [args] [format] >[image_file]`
-`args` can be a list of names of historical figures or categories of historical figures or both. `format` can be `-svg` or `-png`. See the [spec](https://github.com/rickpock/horizontal-history/blob/master/spec.md) for details.
+`args` can be a list of names of historical figures or categories of historical figures or both. `format` can be `-svg` or `-png`. See the [spec](https://github.com/rickpock/horizontal-history/blob/master/spec2.md) for details.
 
 The program outputs the image data to stdout. Redirect the stream to the filename of your choice.
 
